@@ -43,6 +43,8 @@ function installRuntime(scenario) {
   else delete global.$request;
   if (scenario.argument) global.$argument = scenario.argument;
   else delete global.$argument;
+  if (scenario.scriptType) global.$script = { type: scenario.scriptType };
+  else delete global.$script;
 }
 
 function runScenario(name, scenario) {
@@ -159,6 +161,19 @@ const J = (code, data) => JSON.stringify({ code, msg: code === 0 ? "OK" : "err",
       { status: 200, body: J(0, { data: { state: "idle" } }) },
       { status: 200, body: J(0, { data: { locations: [{ location_id: 11, name: "咖啡馆" }] } }) },
       { status: 200, body: J(0, { data: {} }) }
+    ]
+  });
+
+  // 9. generic 手动运行入口: 与 cron 同参数, 验证分发正确
+  await runScenario("S9 generic手动运行", {
+    scriptType: "generic",
+    argument: { token: "", location: "0", notify: true },
+    responses: [
+      { status: 200, body: J(0, { data: { daily_credit: 100 } }) },
+      { status: 200, body: J(0, { data: { streak_days: 5, today_credit: 100, total_credits: 500, end_time: "2026-10-15 23:59:59" } }) },
+      { status: 200, body: J(0, { data: { state: "idle" } }) },
+      { status: 200, body: J(0, { data: { locations: [{ location_id: 11, name: "咖啡馆" }] } }) },
+      { status: 200, body: J(0, { data: { duration: 14400 } }) }
     ]
   });
   console.log("\n全部场景执行完毕");

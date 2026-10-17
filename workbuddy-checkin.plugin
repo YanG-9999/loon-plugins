@@ -4,7 +4,7 @@
 #!homepage = https://www.codebuddy.cn
 #!system = iOS
 #!loon_version = 3.5.1(983)
-#!date = 2026-10-17
+#!date = 2026-10-17.1
 #!tag = 工具,自动化
 #!type = normal
 
@@ -15,9 +15,11 @@ cronExpr = input,"0 8,14,20 * * *",type=string,tag=执行时间,desc=Cron表达�
 notify = switch,true,type=boolean,tag=结果通知,desc=有实际领取动作或异常时才推送通知
 
 [Script]
-request if ${url} ~= /^https?:\/\/(www\.)?(codebuddy|workbuddy)\.(cn|com|ai)/ then script("https://cdn.jsdelivr.net/gh/YanG-9999/loon-plugins@v1.0.0/workbuddy-checkin.js") with requires_body=false, tag="WB_令牌捕获"
+request if ${url} ~= /^https?:\/\/(www\.)?(codebuddy|workbuddy)\.(cn|com|ai)/ then script("https://cdn.jsdelivr.net/gh/YanG-9999/loon-plugins@v1.0.1/workbuddy-checkin.js") with requires_body=false, tag="WB_令牌捕获"
 
-cron ${cronExpr} then script("https://cdn.jsdelivr.net/gh/YanG-9999/loon-plugins@v1.0.0/workbuddy-checkin.js", {${token}, ${location}, ${notify}}) with timeout=120, tag="WB_每日签到派猫"
+cron ${cronExpr} then script("https://cdn.jsdelivr.net/gh/YanG-9999/loon-plugins@v1.0.1/workbuddy-checkin.js", {${token}, ${location}, ${notify}}) with timeout=120, tag="WB_每日签到派猫"
+
+generic then script("https://cdn.jsdelivr.net/gh/YanG-9999/loon-plugins@v1.0.1/workbuddy-checkin.js", {${token}, ${location}, ${notify}}) with tag="WB_立即运行一次", img_url="play.circle", timeout=120
 
 [Mitm]
 hostname = %APPEND% www.codebuddy.cn, www.workbuddy.cn, api.codebuddy.cn, api.workbuddy.cn
