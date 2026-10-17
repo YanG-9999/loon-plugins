@@ -1,0 +1,23 @@
+#!name = WorkBuddy每日签到·派猫猫
+#!desc = 每天自动签到领积分(Buddy加油站100/天)+派猫猫旅行自动派遣与领取,iOS端自动捕获令牌,双域名自动切换
+#!author = 牛夜
+#!homepage = https://www.codebuddy.cn
+#!system = iOS
+#!loon_version = 3.5.1(983)
+#!date = 2026-10-17
+#!tag = 工具,自动化
+#!type = normal
+
+[Argument]
+token = input,"",type=string,tag=Bearer令牌,desc=留空则自动捕获(在iOS登录过WorkBuddy即可);也可手动粘贴桌面端令牌
+location = select,"0","1","2","3","4",type=string,tag=旅行地点,desc=序号0=列表第一个(通常是咖啡馆),数字越大越靠后
+cronExpr = input,"0 8,14,20 * * *",type=string,tag=执行时间,desc=Cron表达式,默认每天8点/14点/20点各跑一次
+notify = switch,true,type=boolean,tag=结果通知,desc=有实际领取动作或异常时才推送通知
+
+[Script]
+request if ${url} ~= /^https?:\/\/(www\.)?(codebuddy|workbuddy)\.(cn|com|ai)/ then script("https://cdn.jsdelivr.net/gh/YanG-9999/loon-plugins@v1.0.0/workbuddy-checkin.js") with requires_body=false, tag="WB_令牌捕获"
+
+cron ${cronExpr} then script("https://cdn.jsdelivr.net/gh/YanG-9999/loon-plugins@v1.0.0/workbuddy-checkin.js", {${token}, ${location}, ${notify}}) with timeout=120, tag="WB_每日签到派猫"
+
+[Mitm]
+hostname = %APPEND% www.codebuddy.cn, www.workbuddy.cn, api.codebuddy.cn, api.workbuddy.cn
